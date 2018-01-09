@@ -3,7 +3,7 @@ from setuptools import setup, find_packages
 
 version = '0.0.1'
 
-setup(name='anstoProcessEmbargo',
+setup(name='process_embargo',
       version=version,
       description="MyTardis app to process embargo",
       long_description="""\
