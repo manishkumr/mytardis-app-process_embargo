@@ -15,9 +15,7 @@ Add celerybeat schedule to tardis/settings.json:
 
 ```
 "process_embargo": {
-                "schedule": {
-                    "minutes": 2
-                },
+                "schedule": timedelta(days=1),
                 "task": "tardis_portal.process_embargo"
             },
  ```
