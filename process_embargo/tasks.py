@@ -5,6 +5,7 @@ from celery import task
 
 from django.utils.timezone import localtime
 from django.db import transaction
+from django.conf import settings
 
 from ansto.tardis.utils.ingestion import acquire_lock
 from ansto.tardis.utils.ingestion import release_lock
@@ -15,6 +16,7 @@ from tardis.tardis_portal.models import Experiment
 def process_embargo():
     exps = Experiment.objects.filter(public_access=Experiment.PUBLIC_ACCESS_NONE)
     today = date.today()
+    embargo_expiry_days = getattr(settings, 'EMBARGO_EXPIRY_DAYS', 1095)
     for exp in exps:
         if acquire_lock(str(exp.id)):
             try:
@@ -24,7 +26,7 @@ def process_embargo():
                         continue
                     local_end_date = localtime(end_time).date()
                     experiment_age = today - local_end_date
-                    if experiment_age > datetime.timedelta(days=1095):
+                    if experiment_age > datetime.timedelta(days=embargo_expiry_days):
                         exp.public_access = Experiment.PUBLIC_ACCESS_FULL
                         exp.save()
             finally:
